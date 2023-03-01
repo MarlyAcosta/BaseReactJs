@@ -1,24 +1,48 @@
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react'
+import Navbar from './components/Navbar'
+import ObjetoApi from './components/ObjetoApi'
+import Pagination from './components/Pagination'
 import './App.css';
 
 function App() {
+
+  const [objetoApi, setObjetoApi] = useState([]);
+  const [infoApi, setinfoApi] = useState([]);
+
+  const initialUrl = 'https://rickandmortyapi.com/api/character';
+
+  const fetchApi = (url) => {
+    fetch(url)
+      .then(response => response.json())
+      .then((data) => {
+        setObjetoApi(data.results);
+        setinfoApi(data.info)
+      })
+      .catch(error => console.log(error))
+  };
+
+  const onSiguiente = () => {
+    fetchApi(infoApi.next);
+  }
+
+  const onAtras = () => {
+    fetchApi(infoApi.prev);
+  }
+
+  useEffect(() => {
+    fetchApi(initialUrl)
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Navbar brand="App base" />
+      <div className='container mt-5'>
+        <Pagination prev={infoApi.prev} next={infoApi.next} onAtras={onAtras} onSiguiente={onSiguiente} />
+        <ObjetoApi objetoApi={objetoApi} />
+        <Pagination prev={infoApi.prev} next={infoApi.next} onAtras={onAtras} onSiguiente={onSiguiente} />
+      </div>
+    </>
+
   );
 }
 
